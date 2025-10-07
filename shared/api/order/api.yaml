@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  title: OrderService API
+  version: 1.0.0
+paths:
+  /api/v1/orders:
+    post:
+      description: >-
+        Создание нового заказа на основе выбранных пользователем деталей.
+      tags:
+        - Order
+      responses:
+        '200':
+          description: Успешно создан заказ
+          content:
+            application/json:
+              schema:
+
+components:
+
+tags:
+  - name: Order
+    description: Сервис заказов управляет заказами на постройку космических кораблей

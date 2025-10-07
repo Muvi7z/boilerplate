@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+// Package ufo.v1 содержит API для работы с наблюдениями НЛО
+package payment.v1;
+
+service payment {
+  rpc PayOrder(PayOrderRequest) returns(PayOrderResponse) {
+
+  }
+}
+
+message PayOrderRequest {
+  string order_uuid = 1;
+  string user_uuid = 2;
+  PaymentMethod payment_method = 3;
+}
+
+message PayOrderResponse {
+   string transaction_uuid = 1;
+}
+
+enum PaymentMethod {
+  UNKNOWN = 0;
+  CARD = 1;
+  SBP = 2;
+  CREDIT_CARD = 3;
+  INVESTOR_MONEY = 4;
+}
+
