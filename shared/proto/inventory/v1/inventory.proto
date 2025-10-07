@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+// Package ufo.v1 содержит API для работы с наблюдениями НЛО
+package inventory.v1;
+
+import "google/protobuf/timestamp.proto";
+
+service InventoryService {
+  rpc GetPart(GetPartRequest) returns (GetPartResponse) {
+
+  };
+
+  rpc ListPart(ListPartRequest) returns (ListPartResponse) {
+
+  }
+}
+
+message PartInfo {
+  string uuid = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int64 stock_quantity = 5;
+  Category  category = 6;
+   Dimensions dimensions = 7;
+  Manufacturer manufacturer =8;
+  repeated string tags = 9;
+  google.protobuf.Timestamp  created_at = 10;
+  google.protobuf.Timestamp  updated_at = 11;
+
+
+}
+
+message GetPartRequest {
+  string uuid = 1;
+}
+
+message GetPartResponse {
+  PartInfo part = 1;
+}
+
+message PartFilter {
+  repeated string uuids = 1;
+
+}
+
+message ListPartRequest {
+  repeated PartInfo parts = 1;
+}
+
+message ListPartResponse {
+  repeated PartInfo parts = 1;
+}
+
+message Manufacturer {
+
+}
+
+message Dimensions {
+
+}
+
+message Category {
+
+}
