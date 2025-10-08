@@ -9,14 +9,60 @@ paths:
         Создание нового заказа на основе выбранных пользователем деталей.
       tags:
         - Order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_uuid:
+                  $ref: "#/components/schemas/UserUuid"
+                part_uuids:
+                  $ref: "#/components/schemas/PartUuids"
       responses:
         '200':
           description: Успешно создан заказ
           content:
             application/json:
               schema:
+                type: object
+                properties:
+                  order_uuid:
+                    $ref: "#/components/schemas/OrderUuid"
+                  total_price:
+                    $ref: "#/components/schemas/TotalPrice"
+        '400':
+            $ref: "#/components/responses/400"
 
 components:
+  responses:
+    '400':
+      description: Невалидные данные ввода
+    '401':
+      description: Неавторизованный доступ
+    5xx:
+      description: Ошибка сервера
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: Описание ошибки
+                example: что-то пошло не так
+              request_id:
+                type: string
+                description: >-
+                  Идентификатор запроса. Предназначен для более быстрого поиска проблем.
+                example: g12ugs67gqw67yu12fgeuqwd
+              code:
+                type: integer
+                description: >-
+                  Код ошибки. Предназначен для классификации проблем и более быстрого решения проблем.
+                example: 12345
   schemas:
     OrderUuid:
       type: string
@@ -33,15 +79,45 @@ components:
       description: Список UUID деталей
       items:
         type: string
+      example: [ "string", "string" ]
     TotalPrice:
       type: number
       format: double
       description: Итоговая стоимость
       example: 1900.29
     TransactionUuid:
-
+      type: string
+      format: uuid
+      description: UUID транзакции (если оплачен)
+      example: "string"
+    PaymentMethod:
+      type: string
+      enum: [ UNKNOWN, CARD, SBP, CREDIT_CARD, INVESTOR_MONEY ]
+      description: Способ оплаты (если оплачен)
+      example: "CARD"
+    Status:
+      type: string
+      enum: [ PENDING_PAYMENT, PAID, CANCELLED ]
+      description: Статус (PENDING_PAYMENT, PAID, CANCELLED)
+      example: "PAID"
     Order:
-
+      type: object
+      description: Заказ
+      required:
+        - id
+      properties:
+        order_uuid:
+          $ref: "#/components/schemas/OrderUuid"
+        user_uuid:
+          $ref: "#/components/schemas/UserUuid"
+        part_uuids:
+          $ref: "#/components/schemas/PartUuids"
+        transaction_uuid:
+          $ref: "#/components/schemas/TransactionUuid"
+        payment_method:
+          $ref: "#/components/schemas/PaymentMethod"
+        status:
+          $ref: "#/components/schemas/Status"
 tags:
   - name: Order
     description: Сервис заказов управляет заказами на постройку космических кораблей
