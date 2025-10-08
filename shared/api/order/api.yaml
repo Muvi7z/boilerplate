@@ -17,6 +17,30 @@ paths:
               schema:
 
 components:
+  schemas:
+    OrderUuid:
+      type: string
+      format: uuid
+      description: Уникальный идентификатор заказа
+      example: 'cae36e0f-69e5-4fa8-a179-a52d083c5549'
+    UserUuid:
+      type: string
+      format: uuid
+      description: Уникальный идентификатор пользователя
+      example: 'cae36e0f-69e5-4fa8-a179-a52d083c5549'
+    PartUuids:
+      type: array
+      description: Список UUID деталей
+      items:
+        type: string
+    TotalPrice:
+      type: number
+      format: double
+      description: Итоговая стоимость
+      example: 1900.29
+    TransactionUuid:
+
+    Order:
 
 tags:
   - name: Order
