@@ -32,10 +32,97 @@ paths:
                   total_price:
                     $ref: "#/components/schemas/TotalPrice"
         '400':
-            $ref: "#/components/responses/400"
-
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        '500':
+          $ref: "#/components/responses/5xx"
+  /api/v1/orders/{order_uuid}/pay:
+    post:
+      description: >-
+        Проведение оплаты ранее созданного заказ
+      tags:
+        - Order
+      parameters:
+        - name: order_uuid
+          schema:
+            $ref: "#/components/schemas/OrderUuid"
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payment_method:
+                  $ref: "#/components/schemas/PaymentMethod"
+      responses:
+        '200':
+          description: Успешно выполнена оплата заказа
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_uuid:
+                    $ref: "#/components/schemas/TransactionUuid"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        '404':
+          description: не найден заказ
+        '500':
+          $ref: "#/components/responses/5xx"
+  /api/v1/orders/{order_uuid}:
+    get:
+      description: >-
+        Возвращает информацию о заказе.
+      tags:
+        - Order
+      parameters:
+        - name: order_uuid
+          schema:
+            $ref: "#/components/schemas/OrderUuid"
+          required: true
+          in: path
+      responses:
+        '200':
+          description: Успешно выполнен запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        '400':
+          $ref: "#/components/responses/400"
+        '401':
+          $ref: "#/components/responses/401"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/5xx"
+  /api/v1/orders/{order_uuid}/cancel:
+    post:
+      parameters:
+        - name: order_uuid
+          schema:
+            $ref: "#/components/schemas/OrderUuid"
+          required: true
+          in: path
+      responses:
+        '204':
+          description: заказ успешно отменён
+        '404':
+          $ref: "#/components/responses/404"
+        '409':
+          description: заказ уже оплачен и не может быть отменён
+        '500':
+          $ref: "#/components/responses/5xx"
 components:
   responses:
+    '404':
+      description: не найден заказ
     '400':
       description: Невалидные данные ввода
     '401':

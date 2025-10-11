@@ -1,7 +1,8 @@
 syntax = "proto3";
 
-// Package ufo.v1 содержит API для работы с наблюдениями НЛО
 package inventory.v1;
+
+option go_package = "github.com/Muvi7z/boilerplate/shared/pkg/proto/inventory/inventory.v1;inventory_v1";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
@@ -74,10 +75,12 @@ message Manufacturer {
 }
 
 message Value {
-  string string_value = 1;
-  string int64_value = 2;
-  double double_value =3;
-  bool bool_value = 4;
+  oneof one {
+    string string_value = 1;
+    string int64_value = 2;
+    double double_value =3;
+    bool bool_value = 4;
+  }
 }
 
 message Dimensions {

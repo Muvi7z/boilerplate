@@ -1,7 +1,9 @@
 syntax = "proto3";
 
-// Package ufo.v1 содержит API для работы с наблюдениями НЛО
 package payment.v1;
+
+option go_package = "github.com/Muvi7z/boilerplate/shared/pkg/proto/payment/payment.v1;payment_v1";
+
 
 service payment {
   rpc PayOrder(PayOrderRequest) returns(PayOrderResponse) {
