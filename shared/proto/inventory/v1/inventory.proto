@@ -52,16 +52,16 @@ enum Category {
 }
 
 message PartFilter {
-  repeated google.protobuf.StringValue uuids = 1;
-  repeated google.protobuf.StringValue names = 2;
+  repeated string uuids = 1;
+  repeated string names = 2;
   repeated Category categories = 3;
-  repeated google.protobuf.StringValue manufacturer_countries = 4;
-  repeated google.protobuf.StringValue tags = 5;
+  repeated string manufacturer_countries = 4;
+  repeated string tags = 5;
 }
 
 
 message ListPartRequest {
-  repeated PartFilter filter = 1;
+  PartFilter filter = 1;
 }
 
 message ListPartResponse {
