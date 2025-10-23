@@ -6,6 +6,8 @@ import (
 )
 
 func (h *Handler) Create(ctx context.Context, request generated.PostApiV1OrdersRequestObject) (generated.PostApiV1OrdersResponseObject, error) {
+	h.orderUseCase.Create(ctx)
+
 	return generated.PostApiV1Orders500JSONResponse{
 		N5xxJSONResponse: struct {
 			Code      *int    `json:"code,omitempty"`

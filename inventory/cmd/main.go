@@ -21,9 +21,6 @@ const grpcPort = 50051
 
 type inventoryService struct {
 	inventoryv1.UnimplementedInventoryServiceServer
-
-	mu    sync.RWMutex
-	parts map[string]*inventoryv1.PartInfo
 }
 
 func (s *inventoryService) GetPart(ctx context.Context, req *inventoryv1.GetPartRequest) (*inventoryv1.GetPartResponse, error) {
