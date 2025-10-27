@@ -11,10 +11,18 @@ type Part struct {
 	Dimensions   Dimensions
 	Manufacturer Manufacturer
 	Tags         []string
-	Metadata     map[string]Value
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	Metadata     map[string]interface{}
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
 }
+
+const (
+	UNKNOWN  = "UNKNOWN"
+	ENGINE   = "ENGINE"
+	FUEL     = "FUEL"
+	PORTHOLE = "PORTHOLE"
+	WING     = "WING"
+)
 
 type Value struct {
 	stringValue string
