@@ -1,7 +1,7 @@
 package converter
 
 import (
-	"github.com/Muvi7z/boilerplate/inventory/entity"
+	"github.com/Muvi7z/boilerplate/inventory/internal/entity"
 	inventory_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/inventory/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"

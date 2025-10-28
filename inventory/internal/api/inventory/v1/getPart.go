@@ -2,7 +2,7 @@ package v1
 
 import (
 	"context"
-	"github.com/Muvi7z/boilerplate/inventory/converter"
+	"github.com/Muvi7z/boilerplate/inventory/internal/converter"
 	inventory_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/inventory/v1"
 )
 

@@ -1,7 +1,7 @@
 package part
 
 import (
-	"github.com/Muvi7z/boilerplate/inventory/repository/entity"
+	"github.com/Muvi7z/boilerplate/inventory/internal/repository/entity"
 	"sync"
 )
 

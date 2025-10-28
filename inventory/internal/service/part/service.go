@@ -1,6 +1,8 @@
 package part
 
-import "github.com/Muvi7z/boilerplate/inventory/repository"
+import (
+	"github.com/Muvi7z/boilerplate/inventory/internal/repository"
+)
 
 type service struct {
 	partRepository repository.PartRepository

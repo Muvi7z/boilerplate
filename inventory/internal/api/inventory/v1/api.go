@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/Muvi7z/boilerplate/inventory/service"
+	"github.com/Muvi7z/boilerplate/inventory/internal/service"
 	inventory_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/inventory/v1"
 )
 

@@ -16,6 +16,14 @@ type Part struct {
 	UpdatedAt    *time.Time
 }
 
+type Filter struct {
+	Uuids                 []string
+	Names                 []string
+	Categories            []string
+	ManufacturerCountries []string
+	Tags                  []string
+}
+
 const (
 	UNKNOWN  = "UNKNOWN"
 	ENGINE   = "ENGINE"
