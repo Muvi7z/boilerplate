@@ -12,10 +12,7 @@ func (a *api) GetPart(ctx context.Context, req *inventory_v1.GetPartRequest) (*i
 		return nil, err
 	}
 
-	partInventory, err := converter.PartToInventoryPartInfo(partInfo)
-	if err != nil {
-		return nil, err
-	}
+	partInventory := converter.PartToInventoryPartInfo(partInfo)
 
 	return &inventory_v1.GetPartResponse{
 		Part: partInventory,

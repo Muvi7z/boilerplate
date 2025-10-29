@@ -82,7 +82,7 @@ func StringToCategory(category string) inventory_v1.Category {
 	return res
 }
 
-func PartToInventoryPartInfo(part entity.Part) (*inventory_v1.PartInfo, error) {
+func PartToInventoryPartInfo(part entity.Part) *inventory_v1.PartInfo {
 	var createdAt *timestamppb.Timestamp
 	if part.CreatedAt != nil {
 		createdAt = timestamppb.New(*part.CreatedAt)
@@ -146,5 +146,30 @@ func PartToInventoryPartInfo(part entity.Part) (*inventory_v1.PartInfo, error) {
 		Metadata:  metadata,
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
-	}, nil
+	}
+}
+
+func InventoryPartFilterToPartFilter(filter *inventory_v1.PartFilter) entity.Filter {
+	var categories []string
+
+	for _, category := range filter.Categories {
+		categories = append(categories, category.String())
+	}
+
+	return entity.Filter{
+		Uuids:                 filter.Uuids,
+		Names:                 filter.Names,
+		Categories:            categories,
+		ManufacturerCountries: filter.ManufacturerCountries,
+		Tags:                  filter.Tags,
+	}
+}
+
+func ArrayPartEntityToPartInfo(info []entity.Part) []*inventory_v1.PartInfo {
+	convertedParts := make([]*inventory_v1.PartInfo, len(info))
+	for i, _ := range info {
+		convertedParts[i] = PartToInventoryPartInfo(info[i])
+	}
+
+	return convertedParts
 }
