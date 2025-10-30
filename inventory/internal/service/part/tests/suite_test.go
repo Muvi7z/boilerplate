@@ -6,6 +6,7 @@ import (
 	"github.com/Muvi7z/boilerplate/inventory/internal/service"
 	"github.com/Muvi7z/boilerplate/inventory/internal/service/part"
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/mock/gomock"
 	"testing"
 )
 
@@ -21,8 +22,10 @@ type ServiceSuite struct {
 
 func (s *ServiceSuite) SetupSuite() {
 	s.ctx = context.Background()
-	s.partRepository = mock.NewMockPartRepository(s.T())
 
+	ctrl := gomock.NewController(s.T())
+
+	s.partRepository = mock.NewMockPartRepository(ctrl)
 	s.service = part.NewService(s.partRepository)
 }
 

@@ -40,9 +40,25 @@ func (s *ServiceSuite) TestGetPartSuccess() {
 	)
 
 	s.partRepository.EXPECT().
-		GetPart(s.ctx, uuid)
+		GetPart(s.ctx, uuid).
+		Return(partInfo, nil)
 
 	part, err := s.partRepository.GetPart(s.ctx, uuid)
 	s.NoError(err)
-	s.Equal(&partInfo, part)
+	s.Equal(partInfo, part)
+}
+
+func (s *ServiceSuite) TestGetPartFailNotFound() {
+	var (
+		uuid = gofakeit.UUID()
+	)
+	s.partRepository.EXPECT().
+		GetPart(s.ctx, uuid).
+		Return(entity.Part{}, entity.ErrPartInfoNotFound)
+
+	res, err := s.partRepository.GetPart(s.ctx, uuid)
+
+	s.Error(err)
+	s.ErrorIs(err, entity.ErrPartInfoNotFound)
+	s.Empty(res)
 }
