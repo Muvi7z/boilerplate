@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	v1 "github.com/Muvi7z/boilerplate/payment/internal/api/payment/v1"
+	"github.com/Muvi7z/boilerplate/payment/internal/service/payment"
 	paymentv1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/payment/v1"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
@@ -46,9 +48,11 @@ func main() {
 
 	serverGrpc := grpc.NewServer()
 
-	service := PaymentService{}
+	service := payment.NewService()
 
-	paymentv1.RegisterPaymentServer(serverGrpc, &service)
+	api := v1.NewAPI(service)
+
+	paymentv1.RegisterPaymentServer(serverGrpc, api)
 
 	reflection.Register(serverGrpc)
 

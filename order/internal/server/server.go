@@ -39,13 +39,5 @@ func (s *Server) PostApiV1OrdersOrderUuidCancel(ctx context.Context, request gen
 }
 
 func (s *Server) PostApiV1OrdersOrderUuidPay(ctx context.Context, request generated.PostApiV1OrdersOrderUuidPayRequestObject) (generated.PostApiV1OrdersOrderUuidPayResponseObject, error) {
-	return generated.PostApiV1OrdersOrderUuidPay500JSONResponse{
-		N5xxJSONResponse: struct {
-			Code      *int    `json:"code,omitempty"`
-			Message   string  `json:"message"`
-			RequestId *string `json:"request_id,omitempty"`
-		}{
-			Message: "not implemented",
-		},
-	}, nil
+	return s.orderHandler.PayOrder(ctx, request)
 }

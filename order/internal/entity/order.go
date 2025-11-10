@@ -9,3 +9,9 @@ type Order struct {
 	paymentMethod   string
 	status          string
 }
+
+type PayOrder struct {
+	OrderUuid     string
+	UserUuid      string
+	PaymentMethod string
+}

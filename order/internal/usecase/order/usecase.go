@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"github.com/Muvi7z/boilerplate/order/internal/entity"
 	generated "github.com/Muvi7z/boilerplate/shared/pkg/server"
 	"github.com/google/uuid"
 )
@@ -20,4 +21,11 @@ func (u *UseCase) Create(ctx context.Context) error {
 	//u.orders[id]
 
 	return nil
+}
+
+func (u *UseCase) PayOrder(ctx context.Context, payOrder entity.PayOrder) (string, error) {
+	///
+	order := u.orders[payOrder.OrderUuid]
+
+	return "", nil
 }
