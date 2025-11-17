@@ -46,6 +46,9 @@ type Order struct {
 	// Status Статус (PENDING_PAYMENT, PAID, CANCELLED)
 	Status *Status `json:"status,omitempty"`
 
+	// TotalPrice Итоговая стоимость
+	TotalPrice *TotalPrice `json:"total_price,omitempty"`
+
 	// TransactionUuid UUID транзакции (если оплачен)
 	TransactionUuid *TransactionUuid `json:"transaction_uuid,omitempty"`
 
@@ -475,6 +478,13 @@ type PostApiV1OrdersOrderUuidCancel204Response struct {
 
 func (response PostApiV1OrdersOrderUuidCancel204Response) VisitPostApiV1OrdersOrderUuidCancelResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
+	return nil
+}
+
+type PostApiV1OrdersOrderUuidCancel400Response = N400Response
+
+func (response PostApiV1OrdersOrderUuidCancel400Response) VisitPostApiV1OrdersOrderUuidCancelResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
 	return nil
 }
 

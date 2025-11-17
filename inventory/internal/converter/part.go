@@ -173,3 +173,12 @@ func ArrayPartEntityToPartInfo(info []entity.Part) []*inventory_v1.PartInfo {
 
 	return convertedParts
 }
+
+func ArrayInventoryPartInfoToPartEntity(info []*inventory_v1.PartInfo) []entity.Part {
+	convertedParts := make([]entity.Part, len(info))
+	for i, _ := range info {
+		convertedParts[i] = InventoryPartInfoToPart(info[i])
+	}
+
+	return convertedParts
+}

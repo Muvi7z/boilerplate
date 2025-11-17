@@ -113,6 +113,8 @@ paths:
       responses:
         '204':
           description: заказ успешно отменён
+        '400':
+            $ref: "#/components/responses/400"
         '404':
           $ref: "#/components/responses/404"
         '409':
@@ -205,6 +207,8 @@ components:
           $ref: "#/components/schemas/PaymentMethod"
         status:
           $ref: "#/components/schemas/Status"
+        total_price:
+          $ref: "#/components/schemas/TotalPrice"
 tags:
   - name: Order
     description: Сервис заказов управляет заказами на постройку космических кораблей

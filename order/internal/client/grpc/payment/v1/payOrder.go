@@ -2,15 +2,13 @@ package v1
 
 import (
 	"context"
-	payment_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/payment/v1"
+	"github.com/Muvi7z/boilerplate/order/internal/converter"
+	"github.com/Muvi7z/boilerplate/order/internal/entity"
 )
 
-func (c *client) PayOrder(ctx context.Context, client payment_v1.PaymentClient) (string, error) {
-	order, err := client.PayOrder(ctx, &payment_v1.PayOrderRequest{
-		OrderUuid:     "",
-		UserUuid:      "",
-		PaymentMethod: 0,
-	})
+func (c *client) PayOrder(ctx context.Context, payOrder entity.PayOrder) (string, error) {
+
+	order, err := c.grpcPaymentClient.PayOrder(ctx, converter.EntityPayOrderToPaymentPayOrder(payOrder))
 	if err != nil {
 		return "", err
 	}
