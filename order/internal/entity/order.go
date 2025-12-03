@@ -7,6 +7,9 @@ import (
 
 var ErrOrderNotFound = errors.New("order not found")
 var ErrOrderIsPaid = errors.New("order is paid")
+var ErrCreateOrder = errors.New("error creating order")
+var ErrGetOrder = errors.New("error getting order")
+var ErrUpdateOrder = errors.New("error updating order")
 
 type Order struct {
 	OrderUuid       string
@@ -38,19 +41,19 @@ type CreateOrder struct {
 }
 
 const (
-	UNKNOWN        = "UNKNOWN"
-	CARD           = "CARD"
-	SBP            = "SBP"
-	CREDIT_CARD    = "CREDIT_CARD"
-	INVESTOR_MONEY = "INVESTOR_MONEY"
+	UNKNOWN       = "UNKNOWN"
+	CARD          = "CARD"
+	SBP           = "SBP"
+	CreditCard    = "CREDIT_CARD"
+	InvestorMoney = "INVESTOR_MONEY"
 )
 
 const (
-	CATEGORY_UNKNOWN  = "UNKNOWN"
-	CATEGORY_ENGINE   = "ENGINE"
-	CATEGORY_FUEL     = "FUEL"
-	CATEGORY_PORTHOLE = "PORTHOLE"
-	CATEGORY_WING     = "WING"
+	CATEGORY_UNKNOWN = "UNKNOWN"
+	CategoryEngine   = "ENGINE"
+	CategoryFuel     = "FUEL"
+	CategoryPorthole = "PORTHOLE"
+	CategoryWing     = "WING"
 )
 
 type DimensionsInfo struct {

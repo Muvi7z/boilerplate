@@ -24,9 +24,9 @@ func StringToPayOrderPaymentMethod(paymentMethod string) payment_v1.PaymentMetho
 		res = payment_v1.PaymentMethod_CARD
 	case entity.SBP:
 		res = payment_v1.PaymentMethod_SBP
-	case entity.CREDIT_CARD:
+	case entity.CreditCard:
 		res = payment_v1.PaymentMethod_CREDIT_CARD
-	case entity.INVESTOR_MONEY:
+	case entity.InvestorMoney:
 		res = payment_v1.PaymentMethod_INVESTOR_MONEY
 	default:
 		res = payment_v1.PaymentMethod_UNKNOWN

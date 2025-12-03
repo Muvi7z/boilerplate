@@ -2,73 +2,140 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/Muvi7z/boilerplate/order/internal/entity"
 	"github.com/Muvi7z/boilerplate/order/internal/repository/converter"
+	entity2 "github.com/Muvi7z/boilerplate/order/internal/repository/entity"
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 )
 
+const ordersTable = "orders"
+
 func (r *Repository) Create(ctx context.Context, order entity.Order) (string, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	id := uuid.New().String()
+	var res string
+	var err, txErr error
 
-	order.OrderUuid = id
+	txErr = sqlxTransaction(ctx, r.db, func(tx *sqlx.Tx) error {
+		id := uuid.New().String()
 
-	r.orders[id] = converter.EntityToOrderRepository(order)
+		order.OrderUuid = id
 
-	return id, nil
-}
+		res, err = r.createTX(ctx, order, tx)
 
-func (r *Repository) Get(ctx context.Context, id string) (entity.Order, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+		return err
+	})
 
-	order, ok := r.orders[id]
-	if !ok {
-		return entity.Order{}, entity.ErrOrderNotFound
+	if txErr != nil {
+		return "", txErr
 	}
 
-	return converter.RepositoryToOrderEntity(order), nil
+	return res, nil
+}
+
+func (r *Repository) createTX(ctx context.Context, order entity.Order, tx *sqlx.Tx) (string, error) {
+	insertMap := map[string]any{
+		"order_uuid":  order.OrderUuid,
+		"user_uuid":   order.UserUuid,
+		"part_uuids":  order.PartUuids,
+		"total_price": order.TotalPrice,
+	}
+
+	if order.PaymentMethod != "" {
+		insertMap["payment_method"] = order.PaymentMethod
+	}
+
+	if order.TransactionUuid != "" {
+		insertMap["transaction_uuid"] = order.TransactionUuid
+	}
+
+	if order.Status != "" {
+		insertMap["status"] = order.Status
+	}
+
+	sql, args, err := r.qb.Insert(ordersTable).
+		SetMap(insertMap).
+		Suffix("RETURNINNG *").
+		ToSql()
+	if err != nil {
+		return "", fmt.Errorf("error building query: %w", err)
+	}
+
+	var row entity2.Order
+
+	err = tx.GetContext(ctx, &row, sql, args...)
+	if err != nil {
+		return "", errors.Join(entity.ErrCreateOrder, err)
+	}
+
+	return row.OrderUuid, nil
+}
+
+func (r *Repository) Get(ctx context.Context, id string) (*entity.Order, error) {
+	whereMap := map[string]any{
+		"order_uuid": id,
+	}
+
+	sql, args, err := r.qb.Select("id").
+		Columns("order_uuid", "user_uuid", "part_uuids", "total_price", "transaction_uuid", "payment_method", "status").
+		From(ordersTable).
+		Where(whereMap).
+		ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("error building query: %w", err)
+	}
+
+	var row entity2.Order
+	err = r.db.GetContext(ctx, &row, sql, args...)
+	if err != nil {
+		return nil, errors.Join(entity.ErrGetOrder, err)
+	}
+
+	order := converter.RepositoryToOrderEntity(row)
+
+	return &order, nil
 }
 
 func (r *Repository) Update(ctx context.Context, id string, updateOrder entity.Order) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	repoOrder, ok := r.orders[id]
-	if !ok {
-		return entity.ErrOrderNotFound
-	}
-
-	if updateOrder.UserUuid != "" {
-		repoOrder.UserUuid = updateOrder.UserUuid
-	}
-
-	if updateOrder.OrderUuid != "" {
-		repoOrder.OrderUuid = updateOrder.OrderUuid
-	}
+	updateMap := map[string]any{}
 
 	if updateOrder.TransactionUuid != "" {
-		repoOrder.TransactionUuid = updateOrder.TransactionUuid
+		updateMap["transaction_uuid"] = updateOrder.TransactionUuid
 	}
 
 	if updateOrder.PaymentMethod != "" {
-		repoOrder.PaymentMethod = updateOrder.PaymentMethod
+		updateMap["payment_method"] = updateOrder.PaymentMethod
 	}
 
 	if updateOrder.PartUuids != nil {
-		repoOrder.PartUuids = updateOrder.PartUuids
+		updateMap["part_uuids"] = updateOrder.PartUuids
 	}
 
 	if updateOrder.Status != "" {
-		repoOrder.Status = updateOrder.Status
+		updateMap["status"] = updateOrder.Status
 	}
 
 	if updateOrder.TotalPrice != 0 {
-		repoOrder.TotalPrice = updateOrder.TotalPrice
+		updateMap["total_price"] = updateOrder.TotalPrice
 	}
 
-	r.orders[id] = repoOrder
+	sql, ergs, err := r.qb.
+		Update(ordersTable).
+		SetMap(updateMap).
+		Where(sq.Eq{"id": id}).
+		Suffix("RETURING *").
+		ToSql()
+	if err != nil {
+		return fmt.Errorf("error building query: %w", err)
+	}
+
+	var row entity2.Order
+	err = r.db.GetContext(ctx, &row, sql, ergs...)
+	if err != nil {
+		return errors.Join(entity.ErrUpdateOrder, err)
+	}
 
 	return nil
 }

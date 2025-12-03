@@ -7,7 +7,7 @@ services: # Здесь описываются контейнеры, необхо
     # Устанавливаем удобное читаемое имя контейнера — пригодится для логов и отладки
 
     environment: # Переменные окружения для инициализации MongoDB
-      MONGO_INITDB_DATABASE: inventory-service # Имя базы данных, которая будет создана при запуске
+      MONGO_INITDB_DATABASE: inventory # Имя базы данных, которая будет создана при запуске
       MONGO_INITDB_ROOT_USERNAME: inventory-service-user # Имя root-пользователя MongoDB
       MONGO_INITDB_ROOT_PASSWORD: inventory-service-password # Пароль для root-пользователя
 

@@ -10,13 +10,13 @@ func StringToCategory(category string) inventory_v1.Category {
 	var res inventory_v1.Category
 
 	switch category {
-	case entity.CATEGORY_ENGINE:
+	case entity.CategoryEngine:
 		res = inventory_v1.Category_ENGINE
-	case entity.CATEGORY_FUEL:
+	case entity.CategoryFuel:
 		res = inventory_v1.Category_FUEL
-	case entity.CATEGORY_PORTHOLE:
+	case entity.CategoryPorthole:
 		res = inventory_v1.Category_PORTHOLE
-	case entity.CATEGORY_WING:
+	case entity.CategoryWing:
 		res = inventory_v1.Category_WING
 	default:
 		res = inventory_v1.Category_UNKNOWN

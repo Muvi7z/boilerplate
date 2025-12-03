@@ -14,8 +14,11 @@ type Server struct {
 	server       *http.Server
 }
 
-func NewServer(orderHandler *order.Handler) *Server {
-	s := &Server{orderHandler: orderHandler}
+func NewServer(orderHandler *order.Handler, addr string) *Server {
+	s := &Server{
+		orderHandler: orderHandler,
+		addr:         addr,
+	}
 	mux := http.NewServeMux()
 
 	strictHandler := generated.NewStrictHandler(s, nil)

@@ -151,11 +151,12 @@ func PartToInventoryPartInfo(part entity.Part) *inventory_v1.PartInfo {
 
 func InventoryPartFilterToPartFilter(filter *inventory_v1.PartFilter) entity.Filter {
 	var categories []string
-
+	if filter == nil {
+		return entity.Filter{}
+	}
 	for _, category := range filter.Categories {
 		categories = append(categories, category.String())
 	}
-
 	return entity.Filter{
 		Uuids:                 filter.Uuids,
 		Names:                 filter.Names,

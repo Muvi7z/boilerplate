@@ -4,63 +4,42 @@ import (
 	"context"
 	"github.com/Muvi7z/boilerplate/inventory/internal/entity"
 	"github.com/Muvi7z/boilerplate/inventory/internal/repository/converter"
-	repoEntity "github.com/Muvi7z/boilerplate/inventory/internal/repository/entity"
-	"strings"
+	repo "github.com/Muvi7z/boilerplate/inventory/internal/repository/entity"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func (r *repository) ListPart(ctx context.Context, filter entity.Filter) ([]entity.Part, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+	filterDb := bson.M{}
 
-	filteredParts := make([]repoEntity.Part, len(r.parts), 0)
-
-	for i, _ := range r.parts {
-		accepted := false
-		index := 0
-
-		for _, fUuid := range filter.Uuids {
-			if strings.Contains(fUuid, r.parts[i].Uuid) {
-				accepted = true
-			}
-		}
-
-		for _, fName := range filter.Names {
-			if strings.Contains(fName, r.parts[i].Name) {
-				accepted = true
-			}
-		}
-
-		for _, fCategory := range filter.Categories {
-			if strings.Contains(fCategory, r.parts[i].Category) {
-				accepted = true
-			}
-		}
-
-		for _, fManufacturerCountry := range filter.ManufacturerCountries {
-			if strings.Contains(fManufacturerCountry, r.parts[i].Manufacturer.Country) {
-				accepted = true
-			}
-		}
-
-		for _, fTag := range filter.Tags {
-			for _, tag := range r.parts[i].Tags {
-				if strings.Contains(fTag, tag) {
-					accepted = true
-				}
-			}
-
-		}
-
-		if len(filter.Uuids) == 0 && len(filter.Categories) == 0 && len(filter.ManufacturerCountries) == 0 &&
-			len(filter.Names) == 0 && len(filter.Tags) == 0 {
-			accepted = true
-		}
-
-		if accepted {
-			filteredParts[index] = r.parts[i]
+	if len(filter.Uuids) > 0 {
+		filterDb["_id"] = bson.M{"$in": filter.Uuids}
+	}
+	if len(filter.Names) > 0 {
+		filterDb["name"] = bson.M{"$in": filter.Names}
+	}
+	if len(filter.Categories) > 0 {
+		filterDb["category"] = bson.M{"$in": filter.Categories}
+	}
+	if len(filter.Tags) > 0 {
+		filterDb["tags"] = bson.M{"$in": filter.Tags}
+	}
+	if len(filter.ManufacturerCountries) > 0 {
+		filterDb["manufacturer.country"] = bson.M{
+			"$in": filter.ManufacturerCountries,
 		}
 	}
+	cursor, err := r.collection.Find(ctx, filterDb)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
 
-	return converter.ArrayRepoEntityToPartInfo(filteredParts), nil
+	var parts []repo.Part
+
+	if err = cursor.All(ctx, &parts); err != nil {
+		return nil, err
+	}
+
+	return converter.ArrayRepoEntityToPartInfo(parts), nil
 
 }

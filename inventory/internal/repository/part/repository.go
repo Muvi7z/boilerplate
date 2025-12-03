@@ -1,17 +1,41 @@
 package part
 
 import (
-	"github.com/Muvi7z/boilerplate/inventory/internal/repository/entity"
+	"context"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"log"
 	"sync"
+	"time"
 )
 
 type repository struct {
-	mu    sync.RWMutex
-	parts map[string]entity.Part
+	mu         sync.RWMutex
+	collection *mongo.Collection
 }
 
-func NewRepository() *repository {
+func NewRepository(db *mongo.Database) *repository {
+	collection := db.Collection("parts")
+
+	indexModels := []mongo.IndexModel{
+		{
+			Keys:    bson.D{{"name", 1}},
+			Options: options.Index().SetUnique(false),
+		},
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := collection.Indexes().CreateMany(ctx, indexModels)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	Init(collection)
+
 	return &repository{
-		parts: make(map[string]entity.Part),
+		collection: collection,
 	}
 }

@@ -28,7 +28,7 @@ func (u *UseCase) GetOrder(ctx context.Context, id string) (entity.Order, error)
 		return entity.Order{}, err
 	}
 
-	return order, nil
+	return *order, nil
 }
 
 func (u *UseCase) CreateOrder(ctx context.Context, createOrder entity.CreateOrder) (*entity.Order, error) {
@@ -63,6 +63,11 @@ func (u *UseCase) CreateOrder(ctx context.Context, createOrder entity.CreateOrde
 		Status:          string(generated.PENDINGPAYMENT),
 	}
 
+	_, err = u.orderRepository.Create(ctx, order)
+	if err != nil {
+		return nil, err
+	}
+
 	return &order, nil
 }
 
@@ -78,7 +83,7 @@ func (u *UseCase) CancelOrder(ctx context.Context, id string) error {
 
 	order.Status = string(generated.PENDINGPAYMENT)
 
-	err = u.orderRepository.Update(ctx, order.OrderUuid, order)
+	err = u.orderRepository.Update(ctx, order.OrderUuid, *order)
 	if err != nil {
 		return err
 	}

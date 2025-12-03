@@ -14,8 +14,9 @@ type Repository struct {
 	mu     *sync.RWMutex
 }
 
-func New() *Repository {
+func New(db *sqlx.DB) *Repository {
 	return &Repository{
 		orders: make(map[string]entity.Order),
+		db:     db,
 	}
 }

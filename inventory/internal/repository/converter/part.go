@@ -55,14 +55,16 @@ func RepoEntityToPartInfo(info repoEntity.Part) entity.Part {
 	}
 }
 
-func ArrayPartInfoToRepoEntity(info []entity.Part) []repoEntity.Part {
+func ArrayPartInfoToRepoEntity(info []entity.Part) ([]repoEntity.Part, error) {
 	convertedParts := make([]repoEntity.Part, len(info))
 
 	for i, _ := range info {
-		convertedParts[i] = PartInfoToRepoEntity(info[i])
+		convPart := PartInfoToRepoEntity(info[i])
+
+		convertedParts[i] = convPart
 	}
 
-	return convertedParts
+	return convertedParts, nil
 }
 
 func ArrayRepoEntityToPartInfo(info []repoEntity.Part) []entity.Part {

@@ -1,7 +1,8 @@
-package cmd
+package main
 
 import (
 	"context"
+	"fmt"
 	grpcinventory "github.com/Muvi7z/boilerplate/order/internal/client/grpc/inventory/v1"
 	grpcpayment "github.com/Muvi7z/boilerplate/order/internal/client/grpc/payment/v1"
 	orderhandler "github.com/Muvi7z/boilerplate/order/internal/handler/order"
@@ -15,14 +16,21 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
-const serverAddress = "localhost:50051"
+const serverAddress = "localhost:50052"
+const grpcAddress = "localhost:50051"
 
 func main() {
-	conn, err := grpc.NewClient(serverAddress)
+	conn, err := grpc.NewClient(
+		grpcAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -64,7 +72,7 @@ func main() {
 	paymentClient := payment_v1.NewPaymentClient(conn)
 	inventoryClient := inventory_v1.NewInventoryServiceClient(conn)
 
-	orderRepository := repository.New()
+	orderRepository := repository.New(pool.)
 
 	grpcPaymentClient := grpcpayment.New(paymentClient)
 	grpcInventoryClient := grpcinventory.New(inventoryClient)
@@ -73,10 +81,21 @@ func main() {
 
 	orderHandler := orderhandler.NewHandler(orderUsecase)
 
-	serverOpenApi := server.NewServer(orderHandler)
+	serverOpenApi := server.NewServer(orderHandler, fmt.Sprintf("%s", serverAddress))
 
 	go func() {
 		serverOpenApi.Run()
 	}()
+
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("🛑 Shutting down Order server...")
+	err = serverOpenApi.Shutdown(ctx)
+	if err != nil {
+		return
+	}
+	log.Println("✅ Server stopped")
 
 }
