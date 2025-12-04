@@ -14,7 +14,9 @@ import (
 	payment_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/payment/v1"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -50,6 +52,13 @@ func main() {
 
 	dbURI := os.Getenv("DB_URI")
 
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	db := os.Getenv("POSTGRES_DB")
+	sslmode := os.Getenv("POSTGRES_SSL_MODE")
+
 	ctx := context.Background()
 
 	pool, err := pgxpool.New(ctx, dbURI)
@@ -72,7 +81,21 @@ func main() {
 	paymentClient := payment_v1.NewPaymentClient(conn)
 	inventoryClient := inventory_v1.NewInventoryServiceClient(conn)
 
-	orderRepository := repository.New(pool.)
+	connectStr := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		host,
+		port,
+		user,
+		db,
+		password,
+		sslmode)
+
+	connDb, err := sqlx.Connect("postgres", connectStr)
+	if err != nil {
+		log.Printf("failed to connect to postgres: %v\n", err)
+		return
+	}
+
+	orderRepository := repository.New(connDb)
 
 	grpcPaymentClient := grpcpayment.New(paymentClient)
 	grpcInventoryClient := grpcinventory.New(inventoryClient)
