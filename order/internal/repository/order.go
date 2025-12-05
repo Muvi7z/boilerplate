@@ -10,6 +10,8 @@ import (
 	entity2 "github.com/Muvi7z/boilerplate/order/internal/repository/entity"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
 const ordersTable = "orders"
@@ -38,8 +40,8 @@ func (r *Repository) Create(ctx context.Context, order entity.Order) (string, er
 func (r *Repository) createTX(ctx context.Context, order entity.Order, tx *sqlx.Tx) (string, error) {
 	insertMap := map[string]any{
 		"order_uuid":  order.OrderUuid,
+		"part_uuids":  pq.Array(order.PartUuids),
 		"user_uuid":   order.UserUuid,
-		"part_uuids":  order.PartUuids,
 		"total_price": order.TotalPrice,
 	}
 
@@ -57,7 +59,7 @@ func (r *Repository) createTX(ctx context.Context, order entity.Order, tx *sqlx.
 
 	sql, args, err := r.qb.Insert(ordersTable).
 		SetMap(insertMap).
-		Suffix("RETURNINNG *").
+		Suffix("RETURNING *").
 		ToSql()
 	if err != nil {
 		return "", fmt.Errorf("error building query: %w", err)

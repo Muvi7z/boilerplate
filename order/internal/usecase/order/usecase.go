@@ -63,10 +63,12 @@ func (u *UseCase) CreateOrder(ctx context.Context, createOrder entity.CreateOrde
 		Status:          string(generated.PENDINGPAYMENT),
 	}
 
-	_, err = u.orderRepository.Create(ctx, order)
+	uuidOrder, err := u.orderRepository.Create(ctx, order)
 	if err != nil {
 		return nil, err
 	}
+
+	order.OrderUuid = uuidOrder
 
 	return &order, nil
 }

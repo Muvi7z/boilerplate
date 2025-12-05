@@ -95,6 +95,11 @@ func main() {
 		return
 	}
 
+	if err = connDb.Ping(); err != nil {
+		log.Printf("cant ping db %v", err)
+		return
+	}
+
 	orderRepository := repository.New(connDb)
 
 	grpcPaymentClient := grpcpayment.New(paymentClient)
