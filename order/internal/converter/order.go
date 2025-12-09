@@ -3,6 +3,7 @@ package converter
 import (
 	"github.com/Muvi7z/boilerplate/order/internal/entity"
 	generated "github.com/Muvi7z/boilerplate/shared/pkg/server"
+	"github.com/google/uuid"
 )
 
 func GeneratedToCreateOrderEntity(gen generated.PostApiV1OrdersJSONBody) entity.CreateOrder {
@@ -20,7 +21,10 @@ func GeneratedToCreateOrderEntity(gen generated.PostApiV1OrdersJSONBody) entity.
 
 func OrderEntityFromGenerated(order entity.Order) generated.Order {
 	var orderUuid generated.OrderUuid
-	orderUuid = generated.OrderUuid([]byte(order.OrderUuid))
+	orderUuid, err := uuid.Parse(order.OrderUuid)
+	if err != nil {
+
+	}
 
 	var status generated.Status
 	status = generated.Status(order.Status)
@@ -29,10 +33,18 @@ func OrderEntityFromGenerated(order entity.Order) generated.Order {
 	paymentMethod = generated.PaymentMethod(order.PaymentMethod)
 
 	var transactionUuid generated.TransactionUuid
-	transactionUuid = generated.TransactionUuid([]byte(order.TransactionUuid))
+	if order.TransactionUuid != "" {
+		transactionUuid, err = uuid.Parse(order.TransactionUuid)
+		if err != nil {
+
+		}
+	}
 
 	var userUuid generated.UserUuid
-	userUuid = generated.UserUuid([]byte(order.UserUuid))
+	userUuid, err = uuid.Parse(order.UserUuid)
+	if err != nil {
+
+	}
 
 	return generated.Order{
 		OrderUuid:       &orderUuid,

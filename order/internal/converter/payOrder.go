@@ -7,7 +7,10 @@ import (
 )
 
 func GeneratedPayOrderToEntity(genOrder generated.PostApiV1OrdersOrderUuidPayJSONBody) entity.PayOrder {
-	payMethod := string(*genOrder.PaymentMethod)
+	var payMethod string
+	if genOrder.PaymentMethod != nil {
+		payMethod = string(*genOrder.PaymentMethod)
+	}
 
 	return entity.PayOrder{
 		OrderUuid:     "",

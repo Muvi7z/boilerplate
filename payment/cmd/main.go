@@ -16,7 +16,7 @@ import (
 	"syscall"
 )
 
-const grpcPort = 50052
+const grpcPort = 50053
 
 type PaymentService struct {
 	paymentv1.UnimplementedPaymentServer
@@ -34,7 +34,7 @@ func (s *PaymentService) PayOrder(ctx context.Context, req *paymentv1.PayOrderRe
 }
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf("%d", grpcPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 		return

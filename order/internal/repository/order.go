@@ -80,7 +80,7 @@ func (r *Repository) Get(ctx context.Context, id string) (*entity.Order, error) 
 		"order_uuid": id,
 	}
 
-	sql, args, err := r.qb.Select("id").
+	sql, args, err := r.qb.Select("order_uuid").
 		Columns("order_uuid", "user_uuid", "part_uuids", "total_price", "transaction_uuid", "payment_method", "status").
 		From(ordersTable).
 		Where(whereMap).

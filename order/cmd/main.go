@@ -27,6 +27,7 @@ import (
 
 const serverAddress = "localhost:50052"
 const grpcAddress = "localhost:50051"
+const grpcPaymentAddress = "localhost:50053"
 
 func main() {
 	conn, err := grpc.NewClient(
@@ -40,6 +41,21 @@ func main() {
 
 	defer func() {
 		if cerr := conn.Close(); cerr != nil {
+			log.Fatal("failed to close connection to server:", cerr)
+		}
+	}()
+
+	connPayment, err := grpc.NewClient(
+		grpcPaymentAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	defer func() {
+		if cerr := connPayment.Close(); cerr != nil {
 			log.Fatal("failed to close connection to server:", cerr)
 		}
 	}()
@@ -78,7 +94,7 @@ func main() {
 		return
 	}
 
-	paymentClient := payment_v1.NewPaymentClient(conn)
+	paymentClient := payment_v1.NewPaymentClient(connPayment)
 	inventoryClient := inventory_v1.NewInventoryServiceClient(conn)
 
 	connectStr := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
