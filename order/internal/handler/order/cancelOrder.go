@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) CancelOrder(ctx context.Context, request generated.PostApiV1OrdersOrderUuidCancelRequestObject) (generated.PostApiV1OrdersOrderUuidCancelResponseObject, error) {
-	if request.OrderUuid.String() != "" {
+	if request.OrderUuid.String() == "" {
 		return generated.PostApiV1OrdersOrderUuidCancel404Response{}, nil
 	}
 

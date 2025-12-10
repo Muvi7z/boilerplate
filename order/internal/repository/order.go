@@ -112,7 +112,7 @@ func (r *Repository) Update(ctx context.Context, id string, updateOrder entity.O
 	}
 
 	if updateOrder.PartUuids != nil {
-		updateMap["part_uuids"] = updateOrder.PartUuids
+		updateMap["part_uuids"] = pq.Array(updateOrder.PartUuids)
 	}
 
 	if updateOrder.Status != "" {
@@ -126,8 +126,8 @@ func (r *Repository) Update(ctx context.Context, id string, updateOrder entity.O
 	sql, ergs, err := r.qb.
 		Update(ordersTable).
 		SetMap(updateMap).
-		Where(sq.Eq{"id": id}).
-		Suffix("RETURING *").
+		Where(sq.Eq{"order_uuid": id}).
+		Suffix("RETURNING *").
 		ToSql()
 	if err != nil {
 		return fmt.Errorf("error building query: %w", err)
