@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/kataras/iris/v12/context"
+	"context"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
