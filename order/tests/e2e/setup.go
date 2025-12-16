@@ -3,10 +3,21 @@ package e2e
 import (
 	"context"
 	"github.com/Muvi7z/boilerplate/platform/logger"
+	"github.com/Muvi7z/boilerplate/platform/testcontainers"
 	"github.com/Muvi7z/boilerplate/platform/testcontainers/network"
+	"github.com/Muvi7z/boilerplate/platform/testcontainers/path"
 	"github.com/Muvi7z/boilerplate/platform/testcontainers/postgres"
+	"github.com/docker/go-connections/nat"
+	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/zap"
 	"os"
+	"time"
+)
+
+const (
+	startupTimeout = 3 * time.Minute
+
+	appPort = "APP_PORT"
 )
 
 type TestEnvironment struct {
@@ -24,8 +35,62 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 
 	logger.Info(ctx, "Сеть успешно создана")
 
-	postgresUsername := getEnvWithLogging(ctx)
+	postgresUsername := getEnvWithLogging(ctx, testcontainers.PostgresUserKey)
+	postgresPassword := getEnvWithLogging(ctx, testcontainers.PostgresPasswordKey)
+	postgresHost := getEnvWithLogging(ctx, testcontainers.PostgresHostKey)
+	postgresPort := getEnvWithLogging(ctx, testcontainers.PostgresPortKey)
+	postgresDB := getEnvWithLogging(ctx, testcontainers.PostgresDBKey)
+	postgresImage := getEnvWithLogging(ctx, testcontainers.PostgresImageNameKey)
+	postgresSslmode := getEnvWithLogging(ctx, testcontainers.PostgresImageNameKey)
 
+	grpcPort := getEnvWithLogging(ctx, appPort)
+
+	generatedPostgres, err := postgres.NewContainer(ctx,
+		postgres.WithNetworkName(generatedNetwork.Name()),
+		postgres.WithContainerName(testcontainers.PostgresContainerName),
+		postgres.WithImageName(postgresImage),
+		postgres.WithDatabase(postgresDB),
+		postgres.WithAuth(postgresUsername, postgresPassword),
+		postgres.WithLogger(logger.Logger()),
+		postgres.WithSslMode(postgresSslmode),
+	)
+
+	if err != nil {
+		cleanupTestEnvironment(ctx, &TestEnvironment{Network: generatedNetwork})
+		logger.Fatal(ctx, "не удалось запустить контейнер Postgres", zap.Error(err))
+	}
+
+	logger.Info(ctx, "✅ Контейнер Postgres успешно запущен")
+
+	projectRoot := path.GetProjectRoot()
+
+	appEnv := map[string]string{
+		testcontainers.PostgresHostKey: generatedPostgres.Config().ContainerName,
+	}
+
+	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
+		WithStartupTimeout(startupTimeout)
+
+	//appContainer, err := app.NewContainer(ctx,
+	//	app.WithName(ufoAppName),
+	//	app.WithPort(grpcPort),
+	//	app.WithDockerfile(projectRoot, ufoDockerfile),
+	//	app.WithNetwork(generatedNetwork.Name()),
+	//	app.WithEnv(appEnv),
+	//	app.WithLogOutput(os.Stdout),
+	//	app.WithStartupWait(waitStrategy),
+	//	app.WithLogger(logger.Logger()),
+	//)
+	//if err != nil {
+	//	cleanupTestEnvironment(ctx, &TestEnvironment{Network: generatedNetwork, Postgres: generatedPostgres})
+	//	logger.Fatal(ctx, "не удалось запустить контейнер приложения", zap.Error(err))
+	//}
+
+	logger.Info(ctx, "🎉 Тестовое окружение готово")
+	return &TestEnvironment{
+		Network:  generatedNetwork,
+		Postgres: generatedPostgres,
+	}
 }
 
 // getEnvWithLogging возвращает значение переменной окружения с логированием

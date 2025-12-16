@@ -38,3 +38,9 @@ func WithLogger(logger Logger) Option {
 		c.Logger = logger
 	}
 }
+
+func WithSslMode(Sslmode string) Option {
+	return func(c *Config) {
+		c.Sslmode = Sslmode
+	}
+}
