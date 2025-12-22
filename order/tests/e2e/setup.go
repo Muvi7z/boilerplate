@@ -1,4 +1,4 @@
-package e2e
+package integration
 
 import (
 	"context"
@@ -17,7 +17,9 @@ import (
 const (
 	startupTimeout = 3 * time.Minute
 
-	appPort = "APP_PORT"
+	loggerLevelValue = "debug"
+	appPortKey       = "APP_PORT"
+	orderDockerfile  = "deploy"
 )
 
 type TestEnvironment struct {
@@ -37,13 +39,13 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 
 	postgresUsername := getEnvWithLogging(ctx, testcontainers.PostgresUserKey)
 	postgresPassword := getEnvWithLogging(ctx, testcontainers.PostgresPasswordKey)
-	postgresHost := getEnvWithLogging(ctx, testcontainers.PostgresHostKey)
-	postgresPort := getEnvWithLogging(ctx, testcontainers.PostgresPortKey)
+	//postgresHost := getEnvWithLogging(ctx, testcontainers.PostgresHostKey)
+	//postgresPort := getEnvWithLogging(ctx, testcontainers.PostgresPortKey)
 	postgresDB := getEnvWithLogging(ctx, testcontainers.PostgresDBKey)
 	postgresImage := getEnvWithLogging(ctx, testcontainers.PostgresImageNameKey)
 	postgresSslmode := getEnvWithLogging(ctx, testcontainers.PostgresImageNameKey)
 
-	grpcPort := getEnvWithLogging(ctx, appPort)
+	appPort := getEnvWithLogging(ctx, appPortKey)
 
 	generatedPostgres, err := postgres.NewContainer(ctx,
 		postgres.WithNetworkName(generatedNetwork.Name()),
@@ -68,8 +70,12 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		testcontainers.PostgresHostKey: generatedPostgres.Config().ContainerName,
 	}
 
-	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
+	waitStrategy := wait.ForListeningPort(nat.Port(appPort + "/tcp")).
 		WithStartupTimeout(startupTimeout)
+
+	_ = projectRoot
+	_ = waitStrategy
+	_ = appEnv
 
 	//appContainer, err := app.NewContainer(ctx,
 	//	app.WithName(ufoAppName),

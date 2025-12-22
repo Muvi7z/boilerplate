@@ -5,6 +5,7 @@ go 1.24.0
 require github.com/oapi-codegen/oapi-codegen/v2 v2.5.0
 
 require (
+	github.com/caarlos0/env/v11 v11.3.1 // indirect
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
 	github.com/getkin/kin-openapi v0.133.0 // indirect
 	github.com/go-openapi/jsonpointer v0.22.1 // indirect
