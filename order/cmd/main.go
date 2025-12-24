@@ -5,11 +5,13 @@ import (
 	"fmt"
 	grpcinventory "github.com/Muvi7z/boilerplate/order/internal/client/grpc/inventory/v1"
 	grpcpayment "github.com/Muvi7z/boilerplate/order/internal/client/grpc/payment/v1"
+	"github.com/Muvi7z/boilerplate/order/internal/config"
 	orderhandler "github.com/Muvi7z/boilerplate/order/internal/handler/order"
 	"github.com/Muvi7z/boilerplate/order/internal/migrator"
 	"github.com/Muvi7z/boilerplate/order/internal/repository"
 	"github.com/Muvi7z/boilerplate/order/internal/server"
 	"github.com/Muvi7z/boilerplate/order/internal/usecase/order"
+	"github.com/Muvi7z/boilerplate/platform/closer"
 	inventory_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/inventory/v1"
 	payment_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/payment/v1"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,8 +30,22 @@ import (
 const serverAddress = "localhost:50052"
 const grpcAddress = "localhost:50051"
 const grpcPaymentAddress = "localhost:50053"
+const configPath = "../../deploy/compose/order/.env"
 
 func main() {
+	err := config.Load(configPath)
+	if err != nil {
+		panic(fmt.Errorf("error loading config: %w", err))
+	}
+
+	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+
+	defer appCancel()
+
+	closer.Configure(syscall.SIGINT, syscall.SIGTERM)
+
+	app, err :=
+
 	conn, err := grpc.NewClient(
 		grpcAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -141,5 +157,9 @@ func main() {
 		return
 	}
 	log.Println("✅ Server stopped")
+
+}
+
+func gracefulShutdown() {
 
 }

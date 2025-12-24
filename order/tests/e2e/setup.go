@@ -43,7 +43,7 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 	//postgresPort := getEnvWithLogging(ctx, testcontainers.PostgresPortKey)
 	postgresDB := getEnvWithLogging(ctx, testcontainers.PostgresDBKey)
 	postgresImage := getEnvWithLogging(ctx, testcontainers.PostgresImageNameKey)
-	postgresSslmode := getEnvWithLogging(ctx, testcontainers.PostgresImageNameKey)
+	postgresSslmode := getEnvWithLogging(ctx, testcontainers.PostgresSSLMODE)
 
 	appPort := getEnvWithLogging(ctx, appPortKey)
 

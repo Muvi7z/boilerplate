@@ -7,3 +7,11 @@ type LoggerConfig interface {
 
 type PostgresConfig interface {
 }
+
+type PaymentGRPCConfig interface {
+	Address() string
+}
+
+type InventoryGRPCConfig interface {
+	Address() string
+}
