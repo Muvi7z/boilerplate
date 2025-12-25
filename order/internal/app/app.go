@@ -6,8 +6,15 @@ import (
 	inventory "github.com/Muvi7z/boilerplate/order/internal/client/grpc/inventory/v1"
 	v1 "github.com/Muvi7z/boilerplate/order/internal/client/grpc/payment/v1"
 	"github.com/Muvi7z/boilerplate/order/internal/config"
+	orderhandler "github.com/Muvi7z/boilerplate/order/internal/handler/order"
+	"github.com/Muvi7z/boilerplate/order/internal/repository"
+	"github.com/Muvi7z/boilerplate/order/internal/server"
+	"github.com/Muvi7z/boilerplate/order/internal/usecase/order"
+	"github.com/Muvi7z/boilerplate/platform/closer"
+	"github.com/Muvi7z/boilerplate/platform/logger"
 	inventory_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/inventory/v1"
 	payment_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/payment/v1"
+	"github.com/jmoiron/sqlx"
 	grpc2 "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -15,6 +22,15 @@ import (
 type App struct {
 	paymentService   grpc.PaymentClient
 	inventoryService grpc.InventoryClient
+
+	orderServer *server.Server
+
+	orderHandler *orderhandler.Handler
+
+	orderUsecase *order.UseCase
+
+	db              *sqlx.DB
+	orderRepository order.Repository
 }
 
 func New(ctx context.Context) (*App, error) {
@@ -29,7 +45,10 @@ func New(ctx context.Context) (*App, error) {
 }
 
 func (a *App) initDeps(ctx context.Context) error {
-	inits := []func(ctx context.Context) error{}
+	inits := []func(ctx context.Context) error{
+		a.initLogger,
+		a.initCloser,
+	}
 
 	for _, init := range inits {
 		err := init(ctx)
@@ -41,38 +60,99 @@ func (a *App) initDeps(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) InitPaymentGRPCClient(ctx context.Context) error {
+func (a *App) GetOrderServer(ctx context.Context) error {
+	if a.orderServer == nil {
+		orderHandler, err := a.GetOrderHandler(ctx)
+		if err != nil {
+			return err
+		}
+
+		a.orderServer = server.NewServer(orderHandler)
+	}
+}
+
+func (a *App) GetOrderHandler(ctx context.Context) (*orderhandler.Handler, error) {
+	if a.orderHandler == nil {
+		orderUsecase, err := a.GetOrderUsecase(ctx)
+		if err != nil {
+			return nil, err
+		}
+		a.orderHandler = orderhandler.NewHandler(orderUsecase)
+	}
+
+	return a.orderHandler, nil
+}
+
+func (a *App) GetPaymentGRPCClient(ctx context.Context) (grpc.PaymentClient, error) {
 	connPayment, err := grpc2.NewClient(
 		config.AppConfig().PaymentGRPC.Address(),
 		grpc2.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	paymentClient := payment_v1.NewPaymentClient(connPayment)
 
 	a.paymentService = v1.New(paymentClient)
 
-	return nil
+	return a.paymentService, nil
 }
 
-func (a *App) InitInventoryGRPCClient(ctx context.Context) error {
+func (a *App) GetInventoryGRPCClient(ctx context.Context) (grpc.InventoryClient, error) {
 	connInventory, err := grpc2.NewClient(
 		config.AppConfig().InventoryGRPC.Address(),
 		grpc2.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	inventoryClient := inventory_v1.NewInventoryServiceClient(connInventory)
 
 	a.inventoryService = inventory.New(inventoryClient)
 
-	return nil
+	return a.inventoryService, nil
 }
 
-func (a *App) InitContainer(ctx context.Context) error {
+func (a *App) GetOrderRepository(ctx context.Context) (order.Repository, error) {
+	if a.orderRepository == nil {
+		db, err := sqlx.Connect("postgres", config.AppConfig().Postgres.URI())
+		if err != nil {
 
+		}
+		a.db = db
+		a.orderRepository = repository.New(db)
+	}
+
+	return a.orderRepository, nil
+}
+
+func (a *App) GetOrderUsecase(ctx context.Context) (*order.UseCase, error) {
+	if a.orderUsecase == nil {
+		paymentService, err := a.GetPaymentGRPCClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		inventoryService, err := a.GetInventoryGRPCClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		orderRepository, err := a.GetOrderRepository(ctx)
+		if err != nil {
+			return nil, err
+		}
+		a.orderUsecase = order.New(paymentService, inventoryService, orderRepository)
+	}
+
+	return a.orderUsecase, nil
+}
+
+func (a *App) initLogger(ctx context.Context) error {
+	return logger.Init(config.AppConfig().Logger.Level(), config.AppConfig().Logger.AsJson())
+}
+
+func (a *App) initCloser(_ context.Context) error {
+	closer.SetLogger(logger.Logger())
 	return nil
 }

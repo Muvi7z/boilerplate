@@ -6,6 +6,8 @@ type LoggerConfig interface {
 }
 
 type PostgresConfig interface {
+	URI() string
+	DatabaseName() string
 }
 
 type PaymentGRPCConfig interface {
