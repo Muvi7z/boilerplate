@@ -17,3 +17,7 @@ type PaymentGRPCConfig interface {
 type InventoryGRPCConfig interface {
 	Address() string
 }
+
+type AppServerConfig interface {
+	Address() string
+}

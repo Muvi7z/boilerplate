@@ -44,10 +44,15 @@ func New(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
+func (a *App) Run(ctx context.Context) error {
+	return a.RunOrderServer(ctx)
+}
+
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(ctx context.Context) error{
 		a.initLogger,
 		a.initCloser,
+		a.initOrderServer,
 	}
 
 	for _, init := range inits {
@@ -60,15 +65,34 @@ func (a *App) initDeps(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) GetOrderServer(ctx context.Context) error {
+func (a *App) initOrderServer(ctx context.Context) error {
 	if a.orderServer == nil {
 		orderHandler, err := a.GetOrderHandler(ctx)
 		if err != nil {
 			return err
 		}
 
-		a.orderServer = server.NewServer(orderHandler)
+		addr := config.AppConfig().AppServerConfig.Address()
+
+		a.orderServer = server.NewServer(orderHandler, addr)
 	}
+
+	return nil
+}
+
+func (a *App) RunOrderServer(ctx context.Context) error {
+	a.orderServer.Run()
+
+	closer.AddNamed("app server", func(ctx context.Context) error {
+		err := a.orderServer.Shutdown(ctx)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return nil
 }
 
 func (a *App) GetOrderHandler(ctx context.Context) (*orderhandler.Handler, error) {
