@@ -6,8 +6,8 @@ import (
 )
 
 type inventoryEnvConfig struct {
-	Host string `env:"INVENTORY_GRPC_HOST, required"`
-	Port string `env:"INVENTORY_GRPC_POST, required"`
+	Host string `env:"INVENTORY_GRPC_HOST"`
+	Port string `env:"INVENTORY_GRPC_POST"`
 }
 
 type inventoryGRPCConfig struct {

@@ -115,6 +115,7 @@ func (a *App) GetPaymentGRPCClient(ctx context.Context) (grpc.PaymentClient, err
 	if err != nil {
 		return nil, err
 	}
+
 	paymentClient := payment_v1.NewPaymentClient(connPayment)
 
 	a.paymentService = v1.New(paymentClient)
@@ -140,9 +141,10 @@ func (a *App) GetInventoryGRPCClient(ctx context.Context) (grpc.InventoryClient,
 
 func (a *App) GetOrderRepository(ctx context.Context) (order.Repository, error) {
 	if a.orderRepository == nil {
-		db, err := sqlx.Connect("postgres", config.AppConfig().Postgres.URI())
+		uri := config.AppConfig().Postgres.URI()
+		db, err := sqlx.Connect("postgres", uri)
 		if err != nil {
-
+			return nil, err
 		}
 		a.db = db
 		a.orderRepository = repository.New(db)
@@ -173,7 +175,12 @@ func (a *App) GetOrderUsecase(ctx context.Context) (*order.UseCase, error) {
 }
 
 func (a *App) initLogger(ctx context.Context) error {
-	return logger.Init(config.AppConfig().Logger.Level(), config.AppConfig().Logger.AsJson())
+	level := config.AppConfig().Logger.Level()
+	asJson := config.AppConfig().Logger.AsJson()
+	return logger.Init(
+		level,
+		asJson,
+	)
 }
 
 func (a *App) initCloser(_ context.Context) error {

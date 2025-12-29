@@ -18,7 +18,7 @@ type config struct {
 
 func Load(path ...string) error {
 	err := godotenv.Load(path...)
-	if err != nil && !os.IsNotExist(err) {
+	if err != nil || os.IsNotExist(err) {
 		return err
 	}
 

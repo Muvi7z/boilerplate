@@ -6,8 +6,8 @@ import (
 )
 
 type appEnvConfig struct {
-	Host string `env:"APP_HOST, required"`
-	Port string `env:"APP_PORT, required"`
+	Host string `env:"APP_HOST"`
+	Port string `env:"APP_PORT"`
 }
 
 type appConfig struct {

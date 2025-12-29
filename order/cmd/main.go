@@ -16,7 +16,7 @@ import (
 const serverAddress = "localhost:50052"
 const grpcAddress = "localhost:50051"
 const grpcPaymentAddress = "localhost:50053"
-const configPath = "../../deploy/compose/order/.env"
+const configPath = "../deploy/compose/order/.env"
 
 func main() {
 	err := config.Load(configPath)

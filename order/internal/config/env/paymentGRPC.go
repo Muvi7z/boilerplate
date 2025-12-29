@@ -6,8 +6,8 @@ import (
 )
 
 type paymentEnvConfig struct {
-	Host string `env:"PAYMENT_GRPC_HOST, required"`
-	Port string `env:"PAYMENT_GRPC_POST, required"`
+	Host string `env:"PAYMENT_GRPC_HOST"`
+	Port string `env:"PAYMENT_GRPC_POST"`
 }
 
 type paymentGRPCConfig struct {
