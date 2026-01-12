@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"errors"
 	"github.com/Muvi7z/boilerplate/order/internal/handler/order"
+	"github.com/Muvi7z/boilerplate/platform/logger"
 	generated "github.com/Muvi7z/boilerplate/shared/pkg/server"
 	"log"
 	"net/http"
@@ -31,10 +33,10 @@ func NewServer(orderHandler *order.Handler, addr string) *Server {
 	return s
 }
 
-func (s *Server) Run() {
-	log.Println("Starting server")
+func (s *Server) Run(ctx context.Context) {
+	logger.Info(ctx, "Starting api server")
 
-	if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf(err.Error())
 	}
 }

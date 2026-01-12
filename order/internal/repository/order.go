@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	sql2 "database/sql"
 	"errors"
 	"fmt"
 	sq "github.com/Masterminds/squirrel"
@@ -92,6 +93,9 @@ func (r *Repository) Get(ctx context.Context, id string) (*entity.Order, error) 
 	var row entity2.Order
 	err = r.db.GetContext(ctx, &row, sql, args...)
 	if err != nil {
+		if errors.Is(err, sql2.ErrNoRows) {
+			return nil, entity.ErrOrderNotFound
+		}
 		return nil, errors.Join(entity.ErrGetOrder, err)
 	}
 

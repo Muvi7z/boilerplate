@@ -8,6 +8,8 @@ import (
 type appEnvConfig struct {
 	Host string `env:"APP_HOST"`
 	Port string `env:"APP_PORT"`
+
+	MigrationsDir string `env:"MIGRATIONS_DIR"`
 }
 
 type appConfig struct {
@@ -25,4 +27,8 @@ func NewAppConfig() (*appConfig, error) {
 
 func (cfg *appConfig) Address() string {
 	return net.JoinHostPort(cfg.raw.Host, cfg.raw.Port)
+}
+
+func (cfg *appConfig) MigrationsDir() string {
+	return cfg.raw.MigrationsDir
 }

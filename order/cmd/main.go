@@ -11,11 +11,9 @@ import (
 	"go.uber.org/zap"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
-const serverAddress = "localhost:50052"
-const grpcAddress = "localhost:50051"
-const grpcPaymentAddress = "localhost:50053"
 const configPath = "../deploy/compose/order/.env"
 
 func main() {
@@ -27,12 +25,25 @@ func main() {
 	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 
 	defer appCancel()
+	defer gracefulShutdown()
 
 	closer.Configure(syscall.SIGINT, syscall.SIGTERM)
 
 	app, err := app2.New(appCtx)
 	if err != nil {
 		logger.Error(appCtx, "❌ Не удалось создать приложение", zap.Error(err))
+		return
+	}
+
+	migrator, err := app.GetMigrator(appCtx)
+	if err != nil {
+		logger.Error(appCtx, "❌ Не удалось получить файлы миграции", zap.Error(err))
+		return
+	}
+
+	err = migrator.Up()
+	if err != nil {
+		logger.Error(appCtx, "❌ Не удалось запусть миграцию", zap.Error(err))
 		return
 	}
 
@@ -157,5 +168,10 @@ func main() {
 }
 
 func gracefulShutdown() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
+	if err := closer.CloseAll(ctx); err != nil {
+		logger.Error(ctx, "❌ Ошибка при завершении работы", zap.Error(err))
+	}
 }

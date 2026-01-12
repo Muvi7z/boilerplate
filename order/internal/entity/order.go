@@ -49,6 +49,10 @@ const (
 )
 
 const (
+	Completed = "COMPLETED"
+)
+
+const (
 	CATEGORY_UNKNOWN = "UNKNOWN"
 	CategoryEngine   = "ENGINE"
 	CategoryFuel     = "FUEL"

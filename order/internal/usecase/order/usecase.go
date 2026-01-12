@@ -5,20 +5,24 @@ import (
 	"github.com/Muvi7z/boilerplate/order/internal/client/converter"
 	"github.com/Muvi7z/boilerplate/order/internal/client/grpc"
 	"github.com/Muvi7z/boilerplate/order/internal/entity"
+	"github.com/Muvi7z/boilerplate/order/internal/service"
 	generated "github.com/Muvi7z/boilerplate/shared/pkg/server"
+	"github.com/google/uuid"
 )
 
 type UseCase struct {
-	paymentClient   grpc.PaymentClient
-	inventoryClient grpc.InventoryClient
-	orderRepository Repository
+	paymentClient        grpc.PaymentClient
+	inventoryClient      grpc.InventoryClient
+	orderRepository      Repository
+	orderProducerService service.OrderProducerService
 }
 
-func New(paymentClient grpc.PaymentClient, inventoryClient grpc.InventoryClient, orderRepository Repository) *UseCase {
+func New(paymentClient grpc.PaymentClient, inventoryClient grpc.InventoryClient, orderRepository Repository, orderProducerService service.OrderProducerService) *UseCase {
 	return &UseCase{
-		paymentClient:   paymentClient,
-		orderRepository: orderRepository,
-		inventoryClient: inventoryClient,
+		paymentClient:        paymentClient,
+		orderRepository:      orderRepository,
+		inventoryClient:      inventoryClient,
+		orderProducerService: orderProducerService,
 	}
 }
 
@@ -32,7 +36,6 @@ func (u *UseCase) GetOrder(ctx context.Context, id string) (entity.Order, error)
 }
 
 func (u *UseCase) CreateOrder(ctx context.Context, createOrder entity.CreateOrder) (*entity.Order, error) {
-
 	filter := entity.PartsFilter{
 		Uuids:                 createOrder.PartUuids,
 		Names:                 nil,
@@ -113,5 +116,36 @@ func (u *UseCase) PayOrder(ctx context.Context, payOrder entity.PayOrder) (strin
 		return "", err
 	}
 
+	eventUuid := uuid.NewString()
+
+	event := entity.OrderPaidEvent{
+		EventUuid:       eventUuid,
+		OrderUuid:       order.OrderUuid,
+		UserUuid:        order.UserUuid,
+		PaymentMethod:   payOrder.PaymentMethod,
+		TransactionUuid: transactionUuid,
+	}
+
+	err = u.orderProducerService.OrderPaid(ctx, event)
+	if err != nil {
+		return "", err
+	}
+
 	return transactionUuid, nil
+}
+
+func (u *UseCase) UpdateStatusOrder(ctx context.Context, id string, status string) error {
+	order, err := u.orderRepository.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	order.Status = status
+
+	err = u.orderRepository.Update(ctx, id, *order)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

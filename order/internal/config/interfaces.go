@@ -1,5 +1,7 @@
 package config
 
+import "github.com/IBM/sarama"
+
 type LoggerConfig interface {
 	Level() string
 	AsJson() bool
@@ -20,4 +22,20 @@ type InventoryGRPCConfig interface {
 
 type AppServerConfig interface {
 	Address() string
+	MigrationsDir() string
+}
+
+type KafkaConfig interface {
+	Brokers() []string
+}
+
+type OrderAssembledConsumerConfig interface {
+	Topic() string
+	GroupId() string
+	Config() *sarama.Config
+}
+
+type OrderPaidProducerConfig interface {
+	Topic() string
+	Config() *sarama.Config
 }
