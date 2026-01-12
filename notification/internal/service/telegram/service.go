@@ -29,6 +29,12 @@ type service struct {
 	telegramClient http.TelegramClient
 }
 
+func NewService(telegramClient http.TelegramClient) *service {
+	return &service{
+		telegramClient: telegramClient,
+	}
+}
+
 const chatID = 234586218
 
 func (s *service) SendNotificationAssembly(ctx context.Context, event entity.ShipAssembledEvent) error {

@@ -2,7 +2,7 @@ package decoder
 
 import (
 	"fmt"
-	"github.com/Muvi7z/boilerplate/assembly/internal/entity"
+	"github.com/Muvi7z/boilerplate/notification/internal/entity"
 	events_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/events/v1"
 	"google.golang.org/protobuf/proto"
 )
