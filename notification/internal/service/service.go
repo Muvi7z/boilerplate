@@ -10,10 +10,10 @@ type TelegramService interface {
 	SendNotificationPaid(ctx context.Context, event entity.OrderPaidEvent) error
 }
 
-type OrderAssembledService interface {
+type OrderAssembledConsumerService interface {
 	RunConsumer(ctx context.Context) error
 }
 
-type OrderPaidService interface {
+type OrderPaidConsumerService interface {
 	RunConsumer(ctx context.Context) error
 }

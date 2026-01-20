@@ -90,3 +90,54 @@ func (c *client) HashSet(ctx context.Context, key string, values any) error {
 		return err
 	})
 }
+
+func (c *client) HGetAll(ctx context.Context, key string) ([]any, error) {
+	var values []any
+	err := c.withConn(ctx, func(ctx context.Context, conn redigo.Conn) error {
+		result, err := redigo.Values(conn.Do("HGETALL", key))
+		if err != nil {
+			return err
+		}
+
+		values = result
+		return nil
+	})
+
+	return values, err
+}
+
+func (c *client) Del(ctx context.Context, key string) error {
+	return c.withConn(ctx, func(ctx context.Context, conn redigo.Conn) error {
+		_, err := conn.Do("DEL", key)
+		return err
+	})
+}
+
+func (c *client) Exists(ctx context.Context, key string) (bool, error) {
+	var exists bool
+	err := c.withConn(ctx, func(ctx context.Context, conn redigo.Conn) error {
+		val, err := redigo.Bool(conn.Do("EXISTS", key))
+		if err != nil {
+			return err
+		}
+
+		exists = val
+		return nil
+	})
+
+	return exists, err
+}
+
+func (c *client) Expire(ctx context.Context, key string, expiration time.Duration) error {
+	return c.withConn(ctx, func(ctx context.Context, conn redigo.Conn) error {
+		_, err := conn.Do("EXPIRE", key, int(expiration.Seconds()))
+		return err
+	})
+}
+
+func (c *client) Ping(ctx context.Context) error {
+	return c.withConn(ctx, func(ctx context.Context, conn redigo.Conn) error {
+		_, err := conn.Do("PING")
+		return err
+	})
+}
