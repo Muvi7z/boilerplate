@@ -11,3 +11,10 @@ func SessionToRedisView(session entity.Session) entity2.SessionRedisView {
 		UserId: session.UserId,
 	}
 }
+
+func SessionFromRedisView(view entity2.SessionRedisView) entity.Session {
+	return entity.Session{
+		Uuid:   view.Uuid,
+		UserId: view.UserId,
+	}
+}
