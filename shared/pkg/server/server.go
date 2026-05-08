@@ -77,7 +77,7 @@ type TransactionUuid = openapi_types.UUID
 // UserUuid Уникальный идентификатор пользователя
 type UserUuid = openapi_types.UUID
 
-// N5xx defines model for 5xx.
+// N5xx defines entity for 5xx.
 type N5xx struct {
 	// Code Код ошибки. Предназначен для классификации проблем и более быстрого решения проблем.
 	Code *int `json:"code,omitempty"`
