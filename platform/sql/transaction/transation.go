@@ -1,15 +1,16 @@
-package repository
+package transaction
 
 import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/jmoiron/sqlx"
 )
 
 type txFunc func(tx *sqlx.Tx) error
 
-func sqlxTransaction(ctx context.Context, db *sqlx.DB, f txFunc) (txErr error) {
+func SqlxTransaction(ctx context.Context, db *sqlx.DB, f txFunc) (txErr error) {
 	tx, err := db.BeginTxx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("error creating transaction: %w", err)

@@ -1,13 +1,14 @@
-package repository
+package iam
 
 import (
 	"context"
-	"github.com/Muvi7z/boilerplate/iam/internal/entity"
 	"time"
+
+	"github.com/Muvi7z/boilerplate/iam/internal/entity"
 )
 
-type SessionRepository interface {
-	Get(ctx context.Context, uuid string)
+type sessionRepository interface {
+	Get(ctx context.Context, uuid string) entity.User
 	Delete(ctx context.Context, key string) error
 	Set(ctx context.Context, key string, value entity.Session, ttl time.Duration) error
 }

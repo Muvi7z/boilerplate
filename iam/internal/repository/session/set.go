@@ -8,7 +8,7 @@ import (
 	"github.com/Muvi7z/boilerplate/iam/internal/repository/converter"
 )
 
-func (r *repository) Set(ctx context.Context, key string, value entity.Session, ttl time.Duration) error {
+func (r *Repository) Set(ctx context.Context, key string, value entity.Session, ttl time.Duration) error {
 	cacheKey := r.getCacheKey(key)
 
 	redisView := converter.SessionToRedisView(value)

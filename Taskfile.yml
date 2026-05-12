@@ -140,7 +140,7 @@ tasks:
           mkdir -p {{.BIN_DIR}} tmp-buf
           curl -sSL \
             "https://github.com/bufbuild/buf/releases/download/v{{.BUF_VERSION}}/buf-$(uname -s)-$(uname -m).tar.gz" \
-            | tar -xz -C tmp-buf
+            | tar -x -c tmp-buf
           mv tmp-buf/buf/bin/buf {{.BUF}}
           rm -rf tmp-buf
           chmod +x {{.BUF}}

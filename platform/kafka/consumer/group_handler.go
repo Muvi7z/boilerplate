@@ -62,7 +62,7 @@ func (g *groupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim s
 			session.MarkMessage(message, "")
 
 		case <-session.Context().Done():
-			g.logger.Info(session.Context(), "Kafka session context done")
+			g.logger.Info(session.Context(), "Kafka iam context done")
 			return nil
 		}
 	}

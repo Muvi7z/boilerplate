@@ -7,19 +7,19 @@ import (
 )
 
 const (
-	cacheKeyPrefix = "iam:session:"
+	cacheKeyPrefix = "iam:iam:"
 )
 
-type repository struct {
+type Repository struct {
 	cache cache.RedisClient
 }
 
-func NewRepository(cache cache.RedisClient) *repository {
-	return &repository{
+func NewRepository(cache cache.RedisClient) *Repository {
+	return &Repository{
 		cache: cache,
 	}
 }
 
-func (r *repository) getCacheKey(uuid string) string {
+func (r *Repository) getCacheKey(uuid string) string {
 	return fmt.Sprintf("%s%s", cacheKeyPrefix, uuid)
 }

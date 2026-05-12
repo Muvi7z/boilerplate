@@ -5,13 +5,13 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type repository struct {
+type Repository struct {
 	db *sqlx.DB
 	qb sq.StatementBuilderType
 }
 
-func New(db *sqlx.DB) *repository {
-	return &repository{
+func New(db *sqlx.DB) *Repository {
+	return &Repository{
 		db: db,
 		qb: sq.StatementBuilder.PlaceholderFormat(sq.Dollar),
 	}

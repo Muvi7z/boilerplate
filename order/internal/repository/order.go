@@ -5,10 +5,12 @@ import (
 	sql2 "database/sql"
 	"errors"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/Muvi7z/boilerplate/order/internal/entity"
 	"github.com/Muvi7z/boilerplate/order/internal/repository/converter"
 	entity2 "github.com/Muvi7z/boilerplate/order/internal/repository/entity"
+	"github.com/Muvi7z/boilerplate/platform/sql/transaction"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -21,7 +23,7 @@ func (r *Repository) Create(ctx context.Context, order entity.Order) (string, er
 	var res string
 	var err, txErr error
 
-	txErr = sqlxTransaction(ctx, r.db, func(tx *sqlx.Tx) error {
+	txErr = transaction.SqlxTransaction(ctx, r.db, func(tx *sqlx.Tx) error {
 		id := uuid.New().String()
 
 		order.OrderUuid = id

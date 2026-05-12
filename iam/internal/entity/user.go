@@ -1,14 +1,14 @@
 package entity
 
 type User struct {
-	uuid               string
-	email              string
-	login              string
-	password           string
-	notificationMethod []NotificationMethod
+	Uuid                string
+	Email               string
+	Login               string
+	Password            string
+	NotificationMethods []NotificationMethod
 }
 
 type NotificationMethod struct {
-	providerName string
-	target       string
+	ProviderName string
+	Target       string
 }
