@@ -1,10 +1,11 @@
 package user
 
 type service struct {
+	userRepository userRepository
 }
 
-func New(sessionRepository sessionRepository) *service {
+func New(userRepository userRepository) *service {
 	return &service{
-		sessionRepository: sessionRepository,
+		userRepository: userRepository,
 	}
 }

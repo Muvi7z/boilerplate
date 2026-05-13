@@ -4,14 +4,13 @@ import (
 	"context"
 
 	"github.com/Muvi7z/boilerplate/iam/internal/entity"
-	"github.com/Muvi7z/boilerplate/iam/internal/service/iam"
 )
 
-func (s *iam.service) GetUser(ctx context.Context, user entity.User) (string, error) {
+func (s *service) Get(ctx context.Context, uuid string) (entity.User, error) {
+	user, err := s.userRepository.Get(ctx, uuid)
+	if err != nil {
+		return entity.User{}, entity.ErrGetUser
+	}
 
-	var session string
-
-	s.sessionRepository.Get(ctx, user.Uuid)
-
-	return session, nil
+	return user, nil
 }

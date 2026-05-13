@@ -20,16 +20,22 @@ func (r *Repository) Create(ctx context.Context, user *entity.User) (string, err
 	var err, txErr error
 
 	txErr = transaction.SqlxTransaction(ctx, r.db, func(tx *sqlx.Tx) error {
-		uuid := uuid.New().String()
+		userUuid := uuid.New().String()
 
-		user.Uuid = uuid
+		user.Uuid = userUuid
 
 		res, err = r.createUserTx(ctx, user, tx)
 		if err != nil {
 			return err
 		}
 
-		//err = r.createUserNotificationMethodsTx(ctx, user.NotificationMethods, tx)
+		for _, nm := range user.NotificationMethods {
+			err = r.createUserNotificationMethodsTx(ctx, nm, user.Uuid, tx)
+			if err != nil {
+				return err
+			}
+
+		}
 
 		return err
 	})

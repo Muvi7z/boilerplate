@@ -9,6 +9,8 @@ import (
 
 func (s *service) Login(ctx context.Context, user entity.User) (string, error) {
 
+	s.userService.Get(ctx, user.Uuid)
+
 	sessionUuid := uuid.New().String()
 
 	session := entity.Session{
@@ -16,7 +18,10 @@ func (s *service) Login(ctx context.Context, user entity.User) (string, error) {
 		UserId: user.Uuid,
 	}
 
-	s.sessionRepository.Set(ctx, session)
+	err := s.sessionRepository.Set(ctx, sessionUuid, session, s.cacheTTL)
+	if err != nil {
+		return "", err
+	}
 
-	return session, nil
+	return sessionUuid, nil
 }

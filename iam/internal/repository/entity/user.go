@@ -1,15 +1,15 @@
 package entity
 
 type User struct {
-	uuid     string `db:"uuid"`
-	login    string `db:"login"`
-	email    string `db:"email"`
-	password string `db:"password"`
+	Uuid     string `db:"uuid"`
+	Login    string `db:"login"`
+	Email    string `db:"email"`
+	Password string `db:"password"`
 }
 
 type NotificationMethod struct {
-	uuid         string `db:"uuid"`
-	userUUID     string `db:"user_uuid"`
-	providerName string `db:"provider_name"`
-	target       string `db:"target"`
+	Uuid         string `db:"uuid"`
+	UserUUID     string `db:"user_uuid"`
+	ProviderName string `db:"provider_name"`
+	Target       string `db:"target"`
 }
