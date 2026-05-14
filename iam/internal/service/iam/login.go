@@ -5,11 +5,20 @@ import (
 
 	"github.com/Muvi7z/boilerplate/iam/internal/entity"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *service) Login(ctx context.Context, user entity.User) (string, error) {
+func (s *service) Login(ctx context.Context, req entity.User) (string, error) {
+	user, err := s.userService.GetByLogin(ctx, req.Login)
+	if err != nil {
+		//log TODO
+		return "", entity.ErrInvalidCredentials
+	}
 
-	s.userService.Get(ctx, user.Uuid)
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		// log TODO
+		return "", entity.ErrInvalidCredentials
+	}
 
 	sessionUuid := uuid.New().String()
 
@@ -18,7 +27,7 @@ func (s *service) Login(ctx context.Context, user entity.User) (string, error) {
 		UserId: user.Uuid,
 	}
 
-	err := s.sessionRepository.Set(ctx, sessionUuid, session, s.cacheTTL)
+	err = s.sessionRepository.Set(ctx, sessionUuid, session, s.cacheTTL)
 	if err != nil {
 		return "", err
 	}
