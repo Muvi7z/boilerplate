@@ -1,5 +1,0 @@
-package grpc
-
-const (
-	SessionUUIDMetadatakey = ""
-)

@@ -16,4 +16,5 @@ type sessionRepository interface {
 type userService interface {
 	Get(ctx context.Context, uuid string) (entity.User, error)
 	GetByLogin(ctx context.Context, login string) (entity.User, error)
+	Create(ctx context.Context, user entity.User) (string, error)
 }

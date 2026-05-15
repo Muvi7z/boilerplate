@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *service) Create(ctx context.Context, user entity.User) (string, error) {
+func (s *Service) Create(ctx context.Context, user entity.User) (string, error) {
 	userUUID := uuid.New().String()
 
 	user.Uuid = userUUID
