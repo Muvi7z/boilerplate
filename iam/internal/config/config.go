@@ -1,18 +1,20 @@
 package config
 
 import (
+	"os"
+
 	"github.com/Muvi7z/boilerplate/iam/internal/config/env"
 	"github.com/joho/godotenv"
-	"os"
 )
 
-var appConfig *config
+var appConfig *Config
 
-type config struct {
-	Logger   LoggerConfig
-	IAMGRPC  IAMGRPCConfig
-	Postgres PostgresConfig
-	Redis    RedisConfig
+type Config struct {
+	Logger          LoggerConfig
+	IAMGRPC         IAMGRPCConfig
+	Postgres        PostgresConfig
+	Redis           RedisConfig
+	AppServerConfig AppServerConfig
 }
 
 func Load(path ...string) error {
@@ -41,16 +43,22 @@ func Load(path ...string) error {
 		return err
 	}
 
-	appConfig = &config{
-		Logger:   loggerConfig,
-		IAMGRPC:  iamGRPCConfig,
-		Postgres: postgresConfig,
-		Redis:    redisConfig,
+	appServerConfig, err := env.NewAppConfig()
+	if err != nil {
+		return err
+	}
+
+	appConfig = &Config{
+		Logger:          loggerConfig,
+		IAMGRPC:         iamGRPCConfig,
+		Postgres:        postgresConfig,
+		Redis:           redisConfig,
+		AppServerConfig: appServerConfig,
 	}
 
 	return nil
 }
 
-func AppConfig() *config {
+func AppConfig() *Config {
 	return appConfig
 }

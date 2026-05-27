@@ -2,12 +2,13 @@ package env
 
 import (
 	"fmt"
+
 	"github.com/caarlos0/env/v11"
 )
 
 type postgresEnvConfig struct {
 	Host     string `env:"POSTGRES_HOST" envDefault:"localhost"`
-	Port     string `env:"POSTGRES_PORT" envDefault:"5432"`
+	Port     string `env:"EXTERNAL_REDIS_PORT" envDefault:"5432"`
 	User     string `env:"POSTGRES_USER"`
 	Password string `env:"POSTGRES_PASSWORD"`
 	Database string `env:"POSTGRES_DB"`

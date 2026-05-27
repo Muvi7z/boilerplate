@@ -2,11 +2,12 @@ package v1
 
 import (
 	"context"
+
 	iam_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/iam/v1"
 )
 
-func (a *api) GetUser(ctx context.Context, request *iam_v1.GetUserRequest) (*iam_v1.GetUserResponse, error) {
-	user, err := a.sessionService.Get(ctx, request.UserUuid)
+func (a *Api) GetUser(ctx context.Context, request *iam_v1.GetUserRequest) (*iam_v1.GetUserResponse, error) {
+	user, err := a.iamService.GetUser(ctx, request.UserUuid)
 	if err != nil {
 		return nil, err
 	}

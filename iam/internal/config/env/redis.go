@@ -1,18 +1,19 @@
 package env
 
 import (
-	"github.com/caarlos0/env/v11"
 	"net"
 	"time"
+
+	"github.com/caarlos0/env/v11"
 )
 
 type redisEnvConfig struct {
-	Host              string        `env:"REDIS_HOST, required"`
-	Port              string        `env:"REDIS_PORT, required"`
-	ConnectionTimeout time.Duration `env:"REDIS_CONNECTION_TIMEOUT, required"`
-	MaxIdle           int           `env:"REDIS_MAX_IDLE, required"`
-	IdleTimeout       time.Duration `env:"REDIS_IDLE_TIMEOUT, required"`
-	CacheTTL          time.Duration `env:"REDIS_CACHE_TTL, required"`
+	Host              string        `env:"REDIS_HOST"`
+	Port              string        `env:"REDIS_PORT"`
+	ConnectionTimeout time.Duration `env:"REDIS_CONNECTION_TIMEOUT"`
+	MaxIdle           int           `env:"REDIS_MAX_IDLE"`
+	IdleTimeout       time.Duration `env:"REDIS_IDLE_TIMEOUT"`
+	CacheTTL          time.Duration `env:"REDIS_CACHE_TTL"`
 }
 
 type RedisConfig struct {

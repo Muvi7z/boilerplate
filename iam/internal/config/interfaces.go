@@ -23,3 +23,8 @@ type PostgresConfig interface {
 	URI() string
 	DatabaseName() string
 }
+
+type AppServerConfig interface {
+	Address() string
+	MigrationsDir() string
+}

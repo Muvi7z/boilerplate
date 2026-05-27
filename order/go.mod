@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/IBM/sarama v1.46.3
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/Muvi7z/boilerplate/platform v0.0.0-20260112014444-9b4ffc48b442
+	github.com/Muvi7z/boilerplate/platform v0.0.0-20260516104458-d50db78a19d2
 	github.com/Muvi7z/boilerplate/shared v0.0.0-20260112014444-9b4ffc48b442
 	github.com/brianvoe/gofakeit/v7 v7.14.0
 	github.com/caarlos0/env/v11 v11.3.1

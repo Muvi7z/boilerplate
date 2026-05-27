@@ -2,11 +2,12 @@ package v1
 
 import (
 	"context"
+
 	"github.com/Muvi7z/boilerplate/iam/internal/entity"
 	iam_v1 "github.com/Muvi7z/boilerplate/shared/pkg/proto/iam/v1"
 )
 
-func (a *api) Register(ctx context.Context, request *iam_v1.RegisterRequest) (*iam_v1.RegisterResponse, error) {
+func (a *Api) Register(ctx context.Context, request *iam_v1.RegisterRequest) (*iam_v1.RegisterResponse, error) {
 	var notificationMethods []entity.NotificationMethod
 
 	for _, notificationMethod := range request.NotificationMethods {
@@ -23,7 +24,7 @@ func (a *api) Register(ctx context.Context, request *iam_v1.RegisterRequest) (*i
 		NotificationMethods: notificationMethods,
 	}
 
-	userUUID, err := a.sessionService.Register(ctx, userReq)
+	userUUID, err := a.iamService.Register(ctx, userReq)
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,11 @@ services:
     env_file:
       - .env
 
+    environment: # Переменные окружения, используемые при запуске контейнера
+      POSTGRES_DB: ${POSTGRES_DB} # Имя базы данных, которая будет создана при запуске
+      POSTGRES_USER: ${POSTGRES_USER} # Имя пользователя, создаваемого в базе
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Пароль для указанного пользователя
+
     volumes:
       - postgres_iam_data:/var/lib/postgresql/data
       # Подключаем именованный том — он будет хранить данные БД вне контейнера
@@ -29,8 +34,7 @@ services:
     networks:
       - microservices-net
       # Подключаем контейнер к общей сети, в которой живут все сервисы микросервисной архитектуры
-
-    redis-iam: # Redis — кэш и хранилище сессий для IAM
+  redis-iam: # Redis — кэш и хранилище сессий для IAM
       image: redis:7.2.5-alpine3.20 # Лёгкий образ Redis последней стабильной версии
       container_name: redis-iam # Явное имя контейнера Redis
 
@@ -55,13 +59,11 @@ services:
       networks:
         - microservices-net
         # Redis подключается к той же общей сети, что и PostgreSQL, и остальные сервисы
-
-  volumes: # Раздел томов — Docker сам создаст и будет управлять этим хранилищем данных
+volumes: # Раздел томов — Docker сам создаст и будет управлять этим хранилищем данных
     postgres_iam_data:
     # Том для хранения данных PostgreSQL (таблицы, индексы и т.д.)
     # Он сохраняется между перезапусками контейнера
-
-  networks: # Определение используемой сети
+networks: # Определение используемой сети
     microservices-net:
       external: true
       # Мы не создаём новую сеть, а подключаемся к внешней, общей для всех микросервисов

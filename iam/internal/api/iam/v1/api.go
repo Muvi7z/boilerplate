@@ -2,13 +2,13 @@ package v1
 
 import "github.com/Muvi7z/boilerplate/shared/pkg/proto/iam/v1"
 
-type api struct {
+type Api struct {
 	iam_v1.UnimplementedIAMServiceServer
-	sessionService sessionService
+	iamService IamService
 }
 
-func NewApi(sessionService sessionService) *api {
-	return &api{
-		sessionService: sessionService,
+func NewApi(iamService IamService) *Api {
+	return &Api{
+		iamService: iamService,
 	}
 }

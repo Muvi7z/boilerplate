@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *service) Login(ctx context.Context, req entity.User) (string, error) {
+func (s *Service) Login(ctx context.Context, req entity.User) (string, error) {
 	user, err := s.userService.GetByLogin(ctx, req.Login)
 	if err != nil {
 		//log TODO
